@@ -1,14 +1,22 @@
 # Free Supabase projects pause after ~7 days without traffic; this ping keeps "galore" awake.
-# ponytail: GitHub disables scheduled workflows after 60 days with no repo commits — re-enable in the Actions tab, or move to Supabase Pro.
+# GitHub disables scheduled workflows after 60 days without repo activity; re-enabling this
+# workflow through the API on every run resets that timer, so it never switches itself off.
 name: Supabase keep-alive
 on:
   schedule:
     - cron: '0 6 */3 * *'
   workflow_dispatch:
+permissions:
+  actions: write
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      # first, so the timer resets even on a run where the ping fails
+      - run: gh workflow enable supabase-keepalive.yml
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
       - run: >
           curl -fsS -o /dev/null
           -H "apikey: sb_publishable_YbzvUYpwaN6r3vM3a9JAAg_k-1XYLXT"
