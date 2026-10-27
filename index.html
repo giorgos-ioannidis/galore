@@ -1,7 +1,14 @@
 <!doctype html><html lang="el" data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "NailSalon", "name": "Galore Nails By Mariza", "address": {"@type": "PostalAddress", "streetAddress": "Εθνικής Αντιστάσεως 17", "addressLocality": "Ελευθερούπολη", "postalCode": "641 00", "addressRegion": "Καβάλα", "addressCountry": "GR"}, "geo": {"@type": "GeoCoordinates", "latitude": 40.9149327, "longitude": 24.2526883}, "telephone": "+30 690 853 2535", "sameAs": ["https://www.instagram.com/galore.nails.by.mariza/"], "hasMap": "https://www.google.com/maps/place/?q=place_id:ChIJ6wC-TDG3rhQR4SmuVWcEX_U", "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:00", "closes": "19:00"}]}</script>
-</head><body>
 <title>Galore Nails By Mariza · Ελευθερούπολη</title>
 <meta name="description" content="Μανικιούρ, ημιμόνιμο, acrygel, πεντικιούρ, βλεφαρίδες και φρύδια στην Ελευθερούπολη. Δείτε τιμές και κλείστε ραντεβού online.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="el_GR">
+<meta property="og:url" content="https://galore-nails.vercel.app/">
+<meta property="og:title" content="Galore Nails By Mariza · Ελευθερούπολη">
+<meta property="og:description" content="Μανικιούρ, ημιμόνιμο, acrygel, πεντικιούρ, βλεφαρίδες και φρύδια. Κλείστε ραντεβού online.">
+<meta property="og:image" content="https://galore-nails.vercel.app/img/nails-3.webp">
+<meta property="og:image:width" content="560">
+<meta property="og:image:height" content="700">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
 :root{
@@ -32,7 +39,7 @@ a{color:inherit;text-decoration:none}
 .logo{font-size:21px;font-weight:800;color:var(--maroon);letter-spacing:.02em;text-transform:lowercase}
 .main-nav{display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px}
 .main-nav a:not(.btn):hover{color:var(--maroon)}
-.nav-toggle{display:none;background:none;border:none;font-size:22px;color:var(--maroon);cursor:pointer}
+.nav-toggle{display:none;min-width:44px;min-height:44px;margin-right:-10px;background:none;border:none;font-size:22px;color:var(--maroon);cursor:pointer}
 @media (max-width:860px){
   .main-nav{position:fixed;inset:60px 16px auto 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);flex-direction:column;align-items:flex-start;padding:18px;gap:14px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:.2s ease;z-index:60}
   .main-nav.open{transform:translateY(0);opacity:1;pointer-events:auto}
@@ -117,11 +124,13 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
 footer a:hover{color:var(--maroon)}
 .footer-bottom{border-top:1px solid var(--line);margin-top:36px;padding-top:18px;font-size:12.5px;color:var(--text-muted)}
 
-dialog#bookingDialog{position:relative;border:none;border-radius:20px;padding:0;width:min(540px,92vw);max-height:88vh;box-shadow:0 20px 60px rgba(0,0,0,.35);background:var(--card);color:var(--text)}
+/* fixed + inset/margin auto: centered in the visible screen wherever the page is scrolled (relative/absolute pinned it to the page top) */
+dialog#bookingDialog{position:fixed;inset:0;margin:auto;height:fit-content;border:none;border-radius:20px;padding:0;width:min(540px,92vw);max-height:88vh;max-height:88dvh;box-shadow:0 20px 60px rgba(0,0,0,.35);background:var(--card);color:var(--text)}
 dialog#bookingDialog::backdrop{background:rgba(15,10,8,.6)}
-.booking-form{display:flex;flex-direction:column;max-height:88vh;margin:0}
-.dialog-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;color:var(--text-muted);cursor:pointer;line-height:1}
-.booking-steps{display:flex;gap:4px;flex-wrap:wrap;padding:22px 26px 0;font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
+html:has(dialog[open]){overflow:hidden}
+.booking-form{display:flex;flex-direction:column;max-height:88vh;max-height:88dvh;margin:0}
+.dialog-close{position:absolute;top:8px;right:8px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;font-size:24px;color:var(--text-muted);cursor:pointer;line-height:1}
+.booking-steps{display:flex;gap:4px;flex-wrap:wrap;padding:22px 56px 0 26px;font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
 .booking-steps .step{padding:6px 10px;border-radius:var(--pill);background:var(--bg)}
 .booking-steps .step.active{background:var(--maroon);color:#fff}
 .booking-panel{padding:20px 26px;overflow-y:auto}
@@ -149,7 +158,7 @@ dialog#bookingDialog::backdrop{background:rgba(15,10,8,.6)}
 .sum-list li{margin:2px 0}
 .service-pick-meta{color:var(--text-muted);font-size:12px;white-space:nowrap}
 .field-label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--maroon);margin-bottom:14px}
-.field-label input,.field-label textarea{font-family:inherit;font-size:14px;font-weight:500;color:var(--text);background:var(--bg);padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.field-label input,.field-label textarea{font-family:inherit;font-size:16px;font-weight:500;color:var(--text);background:var(--bg);padding:10px 12px;border:1px solid var(--line);border-radius:8px}
 .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 @media (max-width:480px){.field-grid{grid-template-columns:1fr}}
 .time-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;margin-top:14px}
@@ -204,7 +213,7 @@ dialog#lightbox img{display:block;width:100%;height:auto;max-height:88vh;object-
 dialog#lightbox button{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:20px;cursor:pointer}
 @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
-
+</head><body>
 <header class="site-header"><div class="wrap header-inner">
   <a class="logo" href="#top">galore</a>
   <nav class="main-nav" id="mainNav">
