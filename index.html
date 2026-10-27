@@ -366,7 +366,11 @@ const supabase = createClient(
   'sb_publishable_YbzvUYpwaN6r3vM3a9JAAg_k-1XYLXT'
 );
 
-const DAY_NAMES = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
+// Apps Script on Mariza's Google Calendar. GET ?date=YYYY-MM-DD -> {busy:[[startMin,endMin],...]}, no event details.
+// New bookings reach the same script via the bookings_to_calendar DB trigger (doPost).
+const CALENDAR_URL = 'https://script.google.com/macros/s/AKfycbxVNS-e4T1zUdua7bPqS5WBDGoyhOx-ZIs6TCo1PQpKV4sArYeRamsNuWDwCVg3kz_M/exec';
+
+const DAY_NAMES =['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
 const DISPLAY_ORDER = [1,2,3,4,5,6,0]; // Δευτέρα .. Κυριακή
 
 let CATEGORIES = [];
@@ -519,32 +523,37 @@ function showError(msg){
 
 async function renderSlots(){
   const dateInput = document.getElementById('bkDate');
-  const today = new Date(); today.setHours(0,0,0,0);
-  dateInput.min = today.toISOString().slice(0,10);
+  const now = new Date();
+  const today = now.toLocaleDateString('sv-SE'); // local YYYY-MM-DD
+  dateInput.min = today;
   const el = document.getElementById('bkSlots');
   if (!dateInput.value) { el.innerHTML = ''; return; }
-  const d = new Date(dateInput.value + 'T00:00:00');
+  const date = dateInput.value;
+  const d = new Date(date + 'T00:00:00');
   const hrs = HOURS[d.getDay()];
   if (!hrs) { el.innerHTML = '<p class="empty-slots">Κλειστά αυτή την ημέρα.</p>'; return; }
 
   el.innerHTML = '<p class="empty-slots">Έλεγχος διαθεσιμότητας…</p>';
-  // ponytail: blocks any exact-time match already booked that day (any service, one specialist),
-  // not a full interval/duration overlap check — add proper overlap math if double-bookings show up.
-  const { data: taken } = await supabase
-    .from('public_booking_slots')
-    .select('booking_time')
-    .eq('booking_date', dateInput.value);
-  const takenTimes = new Set((taken || []).map(t => t.booking_time.slice(0,5)));
+  const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+  // Busy = Mariza's Google Calendar + site bookings (in case one hasn't reached the calendar yet).
+  // If the calendar is unreachable we fall back to site bookings only rather than blocking bookings.
+  const [cal, { data: taken }] = await Promise.all([
+    fetch(`${CALENDAR_URL}?date=${date}`).then(r => r.json()).catch(() => ({})),
+    supabase.from('public_booking_slots').select('booking_time,total_minutes').eq('booking_date', date),
+  ]);
+  if (dateInput.value !== date) return; // another date was picked while we were loading
+  const busy = [...(cal.busy || []), ...(taken || []).map(t => {
+    const s = toMin(t.booking_time); return [s, s + (t.total_minutes || 30)];
+  })];
 
-  const [oh, om] = hrs.open_time.split(':').map(Number);
-  const [ch, cm] = hrs.close_time.split(':').map(Number);
-  let cur = oh * 60 + om, end = ch * 60 + cm;
+  const dur = booking.service?.duration_minutes || 30;
+  const nowMin = date === today ? now.getHours() * 60 + now.getMinutes() : -1;
   const slots = [];
-  while (cur < end) {
-    const t = String(Math.floor(cur/60)).padStart(2,'0') + ':' + String(cur%60).padStart(2,'0');
-    if (!takenTimes.has(t)) slots.push(t);
-    cur += 30;
+  for (let cur = toMin(hrs.open_time); cur + dur <= toMin(hrs.close_time); cur += 30) {
+    if (cur <= nowMin || busy.some(([s, e]) => cur < e && cur + dur > s)) continue;
+    slots.push(String(Math.floor(cur/60)).padStart(2,'0') + ':' + String(cur%60).padStart(2,'0'));
   }
+  if (!slots.includes(booking.time)) booking.time = '';
   if (!slots.length) { el.innerHTML = '<p class="empty-slots">Δεν υπάρχουν διαθέσιμες ώρες αυτή την ημέρα.</p>'; return; }
   el.innerHTML = slots.map(t => `<button type="button" class="slot${booking.time===t?' active':''}" data-t="${t}">${t}</button>`).join('');
   el.querySelectorAll('.slot').forEach(b => b.addEventListener('click', () => {
